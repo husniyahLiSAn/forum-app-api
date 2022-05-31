@@ -17,6 +17,6 @@ You can generate your own encryption keys with following steps:
 3. Copy the result string and use it as the environment variable value to the config file
 
 ### Run the App
-#### 7. `npm run migrate:test up` to migrate/create table to the testing database and `npm run migrate up` to migrate/create table to the original database
+#### 7. `npm run migrate:test up` to migrate/create table to the testing database and `npm run migrate up` to migrate/create table to the production database
 #### 8. `npm run test:watch` to run the test (Coverage 100%)
 #### 9. `npm run start:dev` to run the server
