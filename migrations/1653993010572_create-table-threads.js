@@ -5,10 +5,6 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    owner: {
-      type: 'VARCHAR(50)',
-      notNull: true,
-    },
     title: {
       type: 'TEXT',
       notNull: true,
@@ -19,6 +15,10 @@ exports.up = (pgm) => {
     },
     date: {
       type: 'TEXT',
+      notNull: true,
+    },
+    owner: {
+      type: 'VARCHAR(50)',
       notNull: true,
     },
   });

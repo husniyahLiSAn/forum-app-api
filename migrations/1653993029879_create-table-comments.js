@@ -21,6 +21,11 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       notNull: true,
     },
+    is_delete: {
+      type: 'BOOLEAN',
+      default: false,
+      notNull: true,
+    },
   });
 
   // memberikan constraint foreign key pada kolom owner dan thread_id
