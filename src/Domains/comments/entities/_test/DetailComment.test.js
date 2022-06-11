@@ -4,9 +4,9 @@ describe('a DetailComment entity', () => {
   it('should create DetailComment object properly', () => {
     const payload = {
       id: 'comment-123',
-      username: 'some comment',
+      username: 'unknown user55',
       date: 'thread-123,',
-      content: 'some comment',
+      content: 'Content of comment',
       replies: [],
     };
 
@@ -22,7 +22,7 @@ describe('a DetailComment entity', () => {
     // arrange
     const payload = {
       id: 'comment-123',
-      username: 'some comment',
+      username: 'Somebody comment please',
       date: 'thread-123,',
     };
 
@@ -34,7 +34,7 @@ describe('a DetailComment entity', () => {
     const payload = {
       id: 123,
       username: [],
-      date: 2021,
+      date: 2022,
       content: { },
       replies: 'replies',
     };

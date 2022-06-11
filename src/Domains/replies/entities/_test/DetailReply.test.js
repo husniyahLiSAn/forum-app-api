@@ -5,8 +5,8 @@ describe('a DetailReply entity', () => {
     // arrange
     const payload = {
       id: 'reply-123',
-      content: 'some reply',
-      date: '2021',
+      content: 'Rabbit Message',
+      date: '2022',
     };
 
     // action & assert
@@ -30,8 +30,8 @@ describe('a DetailReply entity', () => {
     const payload = {
       id: 'reply-123',
       commentId: 'comment-123',
-      content: 'some reply',
-      date: '2021',
+      content: 'Toccast Message',
+      date: '2022',
       username: 'John Doe',
     };
 
