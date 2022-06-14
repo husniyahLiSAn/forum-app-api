@@ -218,8 +218,9 @@ describe('ReplyRepositoryPostgres', () => {
         // Assert
         expect(reply).toStrictEqual({
           id: 'reply-123',
-          username: 'johnD0e',
           content: 'Keep this one',
+          date: '2022-06-03T08:54:33.160Z',
+          username: 'johnD0e',
         });
       });
     });

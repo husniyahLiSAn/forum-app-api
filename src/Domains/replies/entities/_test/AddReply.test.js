@@ -33,9 +33,12 @@ describe('a AddReply entities', () => {
     };
 
     // Action
-    const { content } = new AddReply(payload);
+    const addReply = new AddReply(payload);
 
     // Assert
-    expect(content).toEqual(payload.content);
+    expect(addReply.content).toEqual(payload.content);
+    expect(addReply.owner).toEqual(payload.owner);
+    expect(addReply.threadId).toEqual(payload.threadId);
+    expect(addReply.commentId).toEqual(payload.commentId);
   });
 });

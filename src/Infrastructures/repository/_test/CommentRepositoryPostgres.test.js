@@ -188,6 +188,7 @@ describe('CommentRepositoryPostgres', () => {
         expect(comment).toStrictEqual({
           id: 'comment-123',
           username: 'johnD0e',
+          date: '2022-06-03T08:54:33.160Z',
           content: 'Keep this one',
         });
       });

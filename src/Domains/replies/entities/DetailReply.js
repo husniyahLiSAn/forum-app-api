@@ -1,15 +1,12 @@
 class DetailReply {
   constructor(payload) {
     this._verifyPayload(payload);
-    const {
-      id, content, date, username, commentId,
-    } = payload;
 
-    this.id = id;
-    this.content = content;
-    this.date = date;
-    this.username = username;
-    this.commentId = commentId;
+    this.id = payload.id;
+    this.content = payload.isDelete ? '**balasan telah dihapus**' : payload.content;
+    this.date = payload.date;
+    this.username = payload.username;
+    this.isDelete = payload.isDelete;
   }
 
   _verifyPayload(payload) {
@@ -22,20 +19,20 @@ class DetailReply {
   }
 
   _isPayloadNotContainNeededProperty({
-    id, content, date, username, commentId,
+    id, content, date, username, isDelete,
   }) {
-    return (!id || !content || !date || !username || !commentId);
+    return (!id || !content || !date || !username || typeof isDelete === 'undefined' || isDelete === null);
   }
 
   _isPayloadNotMeetDataTypeSpecification({
-    id, content, date, username, commentId,
+    id, content, date, username, isDelete,
   }) {
     return (
       typeof id !== 'string'
         || typeof content !== 'string'
         || typeof date !== 'string'
         || typeof username !== 'string'
-        || typeof commentId !== 'string'
+        || typeof isDelete !== 'boolean'
     );
   }
 }

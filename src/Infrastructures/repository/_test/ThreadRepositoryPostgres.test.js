@@ -198,7 +198,7 @@ describe('ThreadRepositoryPostgres', () => {
         const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
         // Action
-        const result = await threadRepositoryPostgres.getRepliesByThreadId('thread-123');
+        const result = await threadRepositoryPostgres.getRepliesByThreadCommentId('thread-123', ['comment-321']);
 
         // Assert
         expect(result).toHaveLength(0);
@@ -207,32 +207,54 @@ describe('ThreadRepositoryPostgres', () => {
 
       it('should return all of the replies in a thread', async () => {
         // Arrange
+        const idThread = 'thread-123';
         await UsersTableTestHelper.addUser({ id: 'user-234', username: 'UserA' });
         await UsersTableTestHelper.addUser({ id: 'user-456', username: 'UserB' });
 
-        await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-234' });
+        await ThreadsTableTestHelper.addThread({
+          id: idThread,
+          title: 'Take your cake',
+          body: 'node js',
+          owner: 'user-123',
+        });
 
-        await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-234', threadId: 'thread-123' });
-        await CommentsTableTestHelper.addComment({ id: 'comment-456', owner: 'user-456', threadId: 'thread-123' });
-
-        const replyA = {
-          id: 'reply-123', commentId: 'comment-123', content: 'reply A', date: '2022-06-01 00:00:00',
-        };
-        const replyB = {
-          id: 'reply-456', commentId: 'comment-456', content: 'reply B', date: '2022-06-01 00:00:00',
-        };
-
-        const expectedReplies = [
-          { ...replyA, username: 'UserB' }, { ...replyB, username: 'UserA' },
-        ];
-
-        await RepliesTableTestHelper.addReply({ ...replyA, owner: 'user-456' });
-        await RepliesTableTestHelper.addReply({ ...replyB, owner: 'user-123' });
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-122',
+          content: 'Lorem ipsum dolor sit amet',
+          date: '2022-06-03T15:54:33.160Z',
+          owner: 'user-123',
+          threadId: idThread,
+          isDelete: false,
+        });
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-124',
+          content: 'Picasso et al',
+          date: '2022-06-03T18:04:33.160Z',
+          owner: 'user-456',
+          threadId: idThread,
+          isDelete: true,
+        });
+        await RepliesTableTestHelper.addReply({
+          id: 'reply-123',
+          content: 'Miraculously',
+          date: '2022-06-03T16:54:33.160Z',
+          owner: 'user-123',
+          commentId: 'comment-122',
+          isDelete: true,
+        });
+        await RepliesTableTestHelper.addReply({
+          id: 'reply-124',
+          content: 'See this! Lorem ipsum dolor sit amet',
+          date: '2022-06-03T21:04:33.160Z',
+          owner: 'user-456',
+          commentId: 'comment-122',
+          isDelete: false,
+        });
 
         const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
         // Action
-        const result = await threadRepositoryPostgres.getRepliesByThreadId('thread-123');
+        const result = await threadRepositoryPostgres.getRepliesByThreadCommentId('thread-123', ['comment-122', 'comment-124']);
 
         // Assert
         expect(result).toHaveLength(2);

@@ -31,9 +31,11 @@ describe('an AddComment entity', () => {
     };
 
     // Action
-    const { content } = new AddComment(payload);
+    const addComment = new AddComment(payload);
 
     // Assert
-    expect(content).toEqual(payload.content);
+    expect(addComment.content).toEqual(payload.content);
+    expect(addComment.owner).toEqual(payload.owner);
+    expect(addComment.threadId).toEqual(payload.threadId);
   });
 });

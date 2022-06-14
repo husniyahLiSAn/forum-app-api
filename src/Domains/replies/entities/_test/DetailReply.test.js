@@ -16,29 +16,53 @@ describe('a DetailReply entity', () => {
   it('should throw error if payload has invalid data type', () => {
     const payload = {
       id: 123,
-      commentId: 999,
       content: 145,
       date: {},
       username: [],
+      isDelete: 234,
     };
 
     // action & assert
     expect(() => new DetailReply(payload)).toThrowError('DETAIL_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
-  it('should create AddedReply object properly', () => {
+  it('should create DetailReply object properly when the reply isn\'t deleted', () => {
     const payload = {
       id: 'reply-123',
-      commentId: 'comment-123',
+      content: 'Message Brief',
+      date: '2022',
+      username: 'John Doe',
+      isDelete: false,
+    };
+
+    // Action
+    const detailReply = new DetailReply(payload);
+
+    // Assert
+    expect(detailReply.id).toEqual(payload.id);
+    expect(detailReply.content).toEqual(payload.content);
+    expect(detailReply.date).toEqual(payload.date);
+    expect(detailReply.username).toEqual(payload.username);
+    expect(detailReply.isDelete).toEqual(payload.isDelete);
+  });
+
+  it('should create DetailReply object properly when the reply is deleted', () => {
+    const payload = {
+      id: 'reply-123',
       content: 'Toccast Message',
       date: '2022',
       username: 'John Doe',
+      isDelete: true,
     };
 
-    const addedReply = new DetailReply(payload);
-    expect(addedReply.id).toEqual(payload.id);
-    expect(addedReply.content).toEqual(payload.content);
-    expect(addedReply.date).toEqual(payload.date);
-    expect(addedReply.username).toEqual(payload.username);
+    // Action
+    const detailReply = new DetailReply(payload);
+
+    // Assert
+    expect(detailReply.id).toEqual(payload.id);
+    expect(detailReply.content).toEqual('**balasan telah dihapus**');
+    expect(detailReply.date).toEqual(payload.date);
+    expect(detailReply.username).toEqual(payload.username);
+    expect(detailReply.isDelete).toEqual(payload.isDelete);
   });
 });

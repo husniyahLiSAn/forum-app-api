@@ -16,11 +16,12 @@ class CommentRepositoryPostgres extends CommentRepository {
     const id = `comment-${this._idGenerator(10)}`;
     const date = new Date().toISOString();
 
-    const check = {
+    // VERIFY Thread ID
+    const checkThread = {
       text: 'SELECT * FROM threads WHERE id = $1',
       values: [threadId],
     };
-    const resultThread = await this._pool.query(check);
+    const resultThread = await this._pool.query(checkThread);
     if (!resultThread.rowCount) {
       throw new NotFoundError('Thread tidak ditemukan');
     }
@@ -55,7 +56,8 @@ class CommentRepositoryPostgres extends CommentRepository {
   // GET
   async getCommentById(id) {
     const query = {
-      text: `SELECT comments.id, users.username, comments.content
+      text: `SELECT comments.id, users.username, comments.date,
+            CASE WHEN comments.is_delete THEN '**komentar telah dihapus**' else comments.content END AS content
             FROM comments LEFT JOIN users ON comments.owner = users.id 
             WHERE comments.id = $1`,
       values: [id],

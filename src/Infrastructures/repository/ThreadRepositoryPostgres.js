@@ -60,15 +60,15 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   // GET Reply
-  async getRepliesByThreadId(id) {
+  async getRepliesByThreadCommentId(threadId, commentIds) {
     const query = {
       text: `SELECT replies.*, users.username 
           FROM replies 
-          INNER JOIN comments ON replies.comment_id = comments.id
-          INNER JOIN users ON replies.owner = users.id
-          WHERE comments.thread_id = $1
+          LEFT JOIN comments ON replies.comment_id = comments.id
+          LEFT JOIN users ON replies.owner = users.id
+          WHERE comments.thread_id = $1 AND replies.comment_id = ANY($2::text[])
           ORDER BY date ASC`,
-      values: [id],
+      values: [threadId, commentIds],
     };
     const result = await this._pool.query(query);
 
