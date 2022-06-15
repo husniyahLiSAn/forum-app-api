@@ -55,42 +55,6 @@ describe('ReplyRepositoryPostgres', () => {
     });
 
     describe('addReply', () => {
-      it('should throw NotFoundError when thread does not exist', async () => {
-        // Arrange
-        const data = new AddReply({
-          content: 'Say Yoh',
-          owner: 'user-123',
-          threadId: 'thread',
-          commentId: 'comment-123',
-        });
-
-        const fakeIdGenerator = () => '123'; // stub!
-        const commentRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-
-        // Action & Assert
-        await expect(commentRepositoryPostgres.addReply(data))
-          .rejects
-          .toThrowError(NotFoundError);
-      });
-
-      it('should throw NotFoundError when comment does not exist', async () => {
-        // Arrange
-        const data = new AddReply({
-          content: 'Infinity',
-          owner: 'user-123',
-          threadId: 'thread-123',
-          commentId: 'comment-905',
-        });
-
-        const fakeIdGenerator = () => '123'; // stub!
-        const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-
-        // Action & Assert
-        await expect(replyRepositoryPostgres.addReply(data))
-          .rejects
-          .toThrowError(NotFoundError);
-      });
-
       it('should persist add reply and return added reply correctly', async () => {
         // Arrange
         const data = new AddReply({
@@ -222,6 +186,82 @@ describe('ReplyRepositoryPostgres', () => {
           date: '2022-06-03T08:54:33.160Z',
           username: 'johnD0e',
         });
+      });
+    });
+
+    describe('getRepliesByThreadId function', () => {
+      it('should return no replies in a thread', async () => {
+        // Arrange
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-046',
+          content: 'Lorem ipsum',
+          threadId: 'thread-123',
+          owner: 'user-123',
+        });
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-321',
+          content: 'Lorem ipsum',
+          owner: 'user-123',
+          threadId: 'thread-123',
+          isDelete: true,
+        });
+
+        const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+        // Action
+        const result = await replyRepositoryPostgres.getRepliesByThreadCommentId('thread-123', ['comment-321']);
+
+        // Assert
+        expect(result).toHaveLength(0);
+        expect(result).toEqual([]);
+      });
+
+      it('should return all of the replies in a thread', async () => {
+        // Arrange
+        const idThread = 'thread-123';
+        await UsersTableTestHelper.addUser({ id: 'user-234', username: 'UserA' });
+        await UsersTableTestHelper.addUser({ id: 'user-456', username: 'UserB' });
+
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-122',
+          content: 'Lorem ipsum dolor sit amet',
+          date: '2022-06-03T15:54:33.160Z',
+          owner: 'user-123',
+          threadId: idThread,
+          isDelete: false,
+        });
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-124',
+          content: 'Picasso et al',
+          date: '2022-06-03T18:04:33.160Z',
+          owner: 'user-456',
+          threadId: idThread,
+          isDelete: true,
+        });
+        await RepliesTableTestHelper.addReply({
+          id: 'reply-123',
+          content: 'Miraculously',
+          date: '2022-06-03T16:54:33.160Z',
+          owner: 'user-123',
+          commentId: 'comment-122',
+          isDelete: true,
+        });
+        await RepliesTableTestHelper.addReply({
+          id: 'reply-124',
+          content: 'See this! Lorem ipsum dolor sit amet',
+          date: '2022-06-03T21:04:33.160Z',
+          owner: 'user-456',
+          commentId: 'comment-122',
+          isDelete: false,
+        });
+
+        const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+        // Action
+        const result = await replyRepositoryPostgres.getRepliesByThreadCommentId('thread-123', ['comment-122', 'comment-124']);
+
+        // Assert
+        expect(result).toHaveLength(2);
       });
     });
 

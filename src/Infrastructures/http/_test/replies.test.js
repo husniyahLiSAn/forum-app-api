@@ -106,7 +106,7 @@ describe('/replies endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(404);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('Thread tidak ditemukan');
+      expect(responseJson.message).toEqual('Komentar pada Thread tidak ditemukan');
     });
 
     it('should response 404 when the comment does not exist', async () => {
@@ -138,7 +138,7 @@ describe('/replies endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(404);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('Komentar tidak ditemukan');
+      expect(responseJson.message).toEqual('Komentar pada Thread tidak ditemukan');
     });
 
     it('should response 400 when request payload did not contain needed property', async () => {

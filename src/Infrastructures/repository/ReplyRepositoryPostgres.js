@@ -18,26 +18,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     const id = `reply-${this._idGenerator(10)}`;
     const date = new Date().toISOString();
 
-    // VERIFY Thread ID
-    const checkThread = {
-      text: 'SELECT * FROM threads WHERE id = $1',
-      values: [threadId],
-    };
-    const resultThread = await this._pool.query(checkThread);
-    if (!resultThread.rowCount) {
-      throw new NotFoundError('Thread tidak ditemukan');
-    }
-
-    // VERIFY Comment ID
-    const checkComment = {
-      text: 'SELECT * FROM comments WHERE id = $1',
-      values: [commentId],
-    };
-    const resultComment = await this._pool.query(checkComment);
-    if (!resultComment.rowCount) {
-      throw new NotFoundError('Komentar tidak ditemukan');
-    }
-
     const query = {
       text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner',
       values: [id, content, date, owner, commentId],
@@ -82,6 +62,26 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     }
 
     return result.rows[0];
+  }
+
+  // GET Reply By Thread and Comments ID
+  async getRepliesByThreadCommentId(threadId, commentIds) {
+    const query = {
+      text: `SELECT replies.*, users.username 
+          FROM replies 
+          LEFT JOIN comments ON replies.comment_id = comments.id
+          LEFT JOIN users ON replies.owner = users.id
+          WHERE comments.thread_id = $1 AND replies.comment_id = ANY($2::text[])
+          ORDER BY date ASC`,
+      values: [threadId, commentIds],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      return [];
+    }
+
+    return result.rows;
   }
 
   // DELETE

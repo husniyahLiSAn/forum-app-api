@@ -1,23 +1,29 @@
 class GetDetailThreadUseCase {
-  constructor({ threadRepository }) {
+  constructor({
+    threadRepository, commentRepository, replyRepository,
+  }) {
     this._threadRepository = threadRepository;
+    this._commentRepository = commentRepository;
+    this._replyRepository = replyRepository;
   }
 
   // untuk menampung data yang masuk.
   async execute(payload) {
     // Get data Thread and Comment from Thread ID
     const dataThread = await this._threadRepository.getThreadById(payload);
-    const dataComment = await this._threadRepository.getCommentsByThreadId(payload);
+    const dataComment = await this._commentRepository.getCommentsByThreadId(payload);
 
     // Get Comment ID
     const commentIds = dataComment.map((comment) => comment.id);
 
     // Get Reply from Comment ID and Thread ID
-    const dataReply = await this._threadRepository.getRepliesByThreadCommentId(payload, commentIds);
+    const dataReply = await this._replyRepository.getRepliesByThreadCommentId(payload, commentIds);
 
     // Save data Comment to data Thread
     dataThread.comments = dataComment.map((k) => ({
-      ...k,
+      id: k.id,
+      username: k.username,
+      date: k.date,
       content: k.is_delete ? '**komentar telah dihapus**' : k.content,
     }));
 
@@ -26,7 +32,9 @@ class GetDetailThreadUseCase {
       dataThread.comments[i].replies = dataReply
         .filter((reply) => reply.comment_id === dataThread.comments[i].id)
         .map((k) => ({
-          ...k,
+          id: k.id,
+          username: k.username,
+          date: k.date,
           content: k.is_delete ? '**balasan telah dihapus**' : k.content,
         }));
     }

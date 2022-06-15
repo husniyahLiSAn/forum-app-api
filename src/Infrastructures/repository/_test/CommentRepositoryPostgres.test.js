@@ -45,23 +45,6 @@ describe('CommentRepositoryPostgres', () => {
     });
 
     describe('addComment', () => {
-      it('should throw NotFoundError when thread does not exist', async () => {
-        // Arrange
-        const data = new AddComment({
-          content: 'Say Yoh',
-          threadId: 'thread-905',
-          owner: 'user-123',
-        });
-
-        const fakeIdGenerator = () => '123'; // stub!
-        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
-
-        // Action & Assert
-        await expect(commentRepositoryPostgres.addComment(data))
-          .rejects
-          .toThrowError(NotFoundError);
-      });
-
       it('should persist add comment and return added comment correctly', async () => {
         // Arrange
         const data = new AddComment({
@@ -155,6 +138,40 @@ describe('CommentRepositoryPostgres', () => {
       });
     });
 
+    describe('verifyCommentOnThread function', () => {
+      it('should return NotFoundError when thread or comment not found', async () => {
+        // Arrange
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+        // Action & Assert
+        await expect(commentRepositoryPostgres.verifyCommentOnThread('thread-xxx', 'comment-xxx'))
+          .rejects.toThrowError(NotFoundError);
+      });
+
+      it('should throw not found error if comment is not exist', async () => {
+        // Arrange
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+        // Action & Assert
+        await expect(commentRepositoryPostgres.verifyCommentOnThread('thread-123', 'comment-123'))
+          .rejects.toThrowError(NotFoundError);
+      });
+
+      it('should not throw error when comment found on a thread', async () => {
+        // Arrange
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-123',
+          owner: 'user-123',
+          threadId: 'thread-123',
+        });
+
+        // Action & Assert
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+        await expect(commentRepositoryPostgres.verifyCommentOnThread('thread-123', 'comment-123'))
+          .resolves.not.toThrowError(NotFoundError);
+      });
+    });
+
     describe('getCommentById function', () => {
       it('should return NotFoundError when comment not found', async () => {
         // Arrange
@@ -191,6 +208,44 @@ describe('CommentRepositoryPostgres', () => {
           date: '2022-06-03T08:54:33.160Z',
           content: 'Keep this one',
         });
+      });
+    });
+
+    describe('getCommentsByThreadId', () => {
+      it('should return no comments in a thread', async () => {
+        // Arrange
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+        // Action
+        const result = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+        // Assert
+        expect(result).toHaveLength(0);
+        expect(result).toEqual([]);
+      });
+
+      it('should return all of the comments in a thread', async () => {
+        // Arrange
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-113',
+          content: 'Lorem ipsum',
+          threadId: 'thread-123',
+          owner: 'user-123',
+        });
+        await CommentsTableTestHelper.addComment({
+          id: 'comment-321',
+          content: 'Lorem ipsum',
+          owner: 'user-123',
+          threadId: 'thread-123',
+          isDelete: true,
+        });
+        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+        // Action
+        const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+        // Assert
+        expect(comments).toHaveLength(2);
       });
     });
 

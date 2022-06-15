@@ -1,5 +1,6 @@
 const AddReply = require('../../../Domains/replies/entities/AddReply');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
+const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const AddReplyUseCase = require('../AddReplyUseCase');
 
@@ -21,14 +22,18 @@ describe('AddReplyUseCase', () => {
     const expectedAddedReply = new AddedReply({ ...payload });
 
     /* create dependency of use case */
+    const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
 
     /* mocking needed function */
+    mockCommentRepository.verifyCommentOnThread = jest.fn()
+      .mockImplementation(() => Promise.resolve());
     mockReplyRepository.addReply = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedAddedReply));
 
     /* create use case instance */
     const addReplyUseCase = new AddReplyUseCase({
+      commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
     });
 
