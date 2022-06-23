@@ -8,7 +8,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 
-describe('/comments endpoint', () => {
+describe('/threads/{threadId}/comments endpoint', () => {
   afterEach(async () => {
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
@@ -22,6 +22,7 @@ describe('/comments endpoint', () => {
   describe('when POST /threads/{threadId}/comments', () => {
     it('should response 401 when request did not have accessToken', async () => {
       // Arrange
+      const now = new Date();
       const request = {
         content: 'Generate stone trademark',
       };
@@ -36,13 +37,13 @@ describe('/comments endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: now.toISOString(),
         owner: 'user-123',
         threadId: 'thread-123',
       });
@@ -90,6 +91,7 @@ describe('/comments endpoint', () => {
 
     it('should response 400 when request payload did not contain needed property', async () => {
       // Arrange
+      const now = new Date();
       const request = {};
 
       const accessToken = await ServerTestHelper.getAccessToken();
@@ -97,7 +99,7 @@ describe('/comments endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       const server = await createServer(container);
@@ -121,6 +123,7 @@ describe('/comments endpoint', () => {
 
     it('should response 400 when request payload did not meet data specification', async () => {
       // Arrange
+      const now = new Date();
       const request = {
         content: [],
         threadId: 'thread-123',
@@ -131,7 +134,7 @@ describe('/comments endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       const server = await createServer(container);
@@ -155,6 +158,7 @@ describe('/comments endpoint', () => {
 
     it('should response 201 and persisted comment', async () => {
       // Arrange
+      const now = new Date();
       const accessToken = await ServerTestHelper.getAccessToken();
       const request = {
         content: 'Generate stone trademark',
@@ -165,7 +169,7 @@ describe('/comments endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       const server = await createServer(container);
@@ -192,12 +196,13 @@ describe('/comments endpoint', () => {
   describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
     it('should response 404 when comment does not exist', async () => {
       // Arrange
+      const now = new Date();
       const accessToken = await ServerTestHelper.getAccessToken();
       await ThreadsTableTestHelper.addThread({
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       const server = await createServer(container);
@@ -220,6 +225,7 @@ describe('/comments endpoint', () => {
 
     it('should response 403 when user delete another user\'s comment', async () => {
       // Arrange
+      const now = new Date();
       const accessToken = await ServerTestHelper.getAccessToken();
       await UsersTableTestHelper.addUser({
         id: 'user-456',
@@ -231,7 +237,7 @@ describe('/comments endpoint', () => {
         id: 'thread-456',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-456',
       });
       await CommentsTableTestHelper.addComment({
@@ -260,6 +266,7 @@ describe('/comments endpoint', () => {
 
     it('should response 401 when request did not have accesToken', async () => {
       // Arrange
+      const now = new Date();
       await UsersTableTestHelper.addUser({
         id: 'user-123',
         username: 'dicoding',
@@ -270,13 +277,13 @@ describe('/comments endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: now.toISOString(),
         owner: 'user-123',
         threadId: 'thread-123',
       });
@@ -296,18 +303,19 @@ describe('/comments endpoint', () => {
 
     it('should response 200 when delete comment correctly', async () => {
       // Arrange
+      const now = new Date();
       const accessToken = await ServerTestHelper.getAccessToken();
       await ThreadsTableTestHelper.addThread({
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: now.toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: now.toISOString(),
         owner: 'user-123',
         threadId: 'thread-123',
       });

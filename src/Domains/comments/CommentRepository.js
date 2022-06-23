@@ -3,15 +3,15 @@ class CommentRepository {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
+  async verifyCommentById(id) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
   async verifyAccess(id, userId) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
   async verifyCommentOnThread(threadId, commentId) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
-  }
-
-  async getCommentById(id) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 

@@ -9,7 +9,7 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
 
-describe('/replies endpoint', () => {
+describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
   afterEach(async () => {
     await RepliesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
@@ -37,20 +37,20 @@ describe('/replies endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-234',
         threadId: 'thread-123',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         content: 'Generate stone trademark',
         owner: 'user-123',
       });
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
         commentId: 'comment-234',
       });
@@ -80,13 +80,13 @@ describe('/replies endpoint', () => {
         id: 'thread-347',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-259',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
         threadId: 'thread-347',
       });
@@ -120,7 +120,7 @@ describe('/replies endpoint', () => {
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
         owner: 'user-123',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
       });
       const server = await createServer(container);
 
@@ -150,13 +150,13 @@ describe('/replies endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-234',
         threadId: 'thread-123',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         content: 'Generate stone trademark',
         owner: 'user-123',
       });
@@ -191,12 +191,12 @@ describe('/replies endpoint', () => {
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
         owner: 'user-123',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-234',
         threadId: 'thread-123',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         content: 'Generate stone trademark',
         owner: 'user-123',
       });
@@ -230,13 +230,13 @@ describe('/replies endpoint', () => {
         id: 'thread-123',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-564',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
         threadId: 'thread-123',
       });
@@ -262,6 +262,46 @@ describe('/replies endpoint', () => {
   });
 
   describe('when DELETE /threads/{threadId}/comments/{commentId}/replies', () => {
+    it('should response 401 when request did not have accesToken', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({
+        id: 'user-123',
+        username: 'dicoding',
+        password: 'secret_password',
+        fullname: 'Dicoding Indonesia',
+      });
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-123',
+        title: 'Proposal convention',
+        body: 'Lorem ipsum dolor',
+        owner: 'user-123',
+      });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'Generate stone trademark',
+        owner: 'user-123',
+        threadId: 'thread-123',
+      });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        content: 'Generate stone trademark',
+        owner: 'user-123',
+        commentId: 'comment-123',
+      });
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123/replies/reply-123',
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
     it('should response 404 when the reply does not exist', async () => {
       // Arrange
       const accessToken = await ServerTestHelper.getAccessToken();
@@ -270,19 +310,19 @@ describe('/replies endpoint', () => {
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
         owner: 'user-123',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-3414',
         threadId: 'thread-123',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         content: 'Generate stone trademark',
         owner: 'user-123',
       });
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
+        date: new Date().toISOString(),
         owner: 'user-123',
         commentId: 'comment-3414',
       });
@@ -317,7 +357,7 @@ describe('/replies endpoint', () => {
         id: 'thread-456',
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
-        date: '2022-06-04T02:04:43.260Z',
+        date: new Date().toISOString(),
         owner: 'user-2134',
       });
       await CommentsTableTestHelper.addComment({
@@ -351,49 +391,6 @@ describe('/replies endpoint', () => {
       expect(responseJson.message).toEqual('Proses gagal! Anda tidak berhak mengakses balasan ini');
     });
 
-    it('should response 401 when request did not have accesToken', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({
-        id: 'user-123',
-        username: 'dicoding',
-        password: 'secret_password',
-        fullname: 'Dicoding Indonesia',
-      });
-      await ThreadsTableTestHelper.addThread({
-        id: 'thread-123',
-        title: 'Proposal convention',
-        body: 'Lorem ipsum dolor',
-        owner: 'user-123',
-        date: '2022-06-04T02:04:43.260Z',
-      });
-      await CommentsTableTestHelper.addComment({
-        id: 'comment-123',
-        content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
-        owner: 'user-123',
-        threadId: 'thread-123',
-      });
-      await RepliesTableTestHelper.addReply({
-        id: 'reply-123',
-        content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
-        owner: 'user-123',
-        commentId: 'comment-123',
-      });
-      const server = await createServer(container);
-
-      // Action
-      const response = await server.inject({
-        method: 'DELETE',
-        url: '/threads/thread-123/comments/comment-123/replies/reply-123',
-      });
-
-      // Assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(401);
-      expect(responseJson.message).toEqual('Missing authentication');
-    });
-
     it('should response 200 when delete reply correctly', async () => {
       // Arrange
       const accessToken = await ServerTestHelper.getAccessToken();
@@ -403,19 +400,16 @@ describe('/replies endpoint', () => {
         title: 'Proposal convention',
         body: 'Lorem ipsum dolor',
         owner: 'user-123',
-        date: '2022-06-04T02:04:43.260Z',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-121',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
         owner: 'user-123',
         threadId: 'thread-31232',
       });
       await RepliesTableTestHelper.addReply({
         id: 'reply-121',
         content: 'Generate stone trademark',
-        date: '2022-06-04T03:48:30.111Z',
         owner: 'user-123',
         commentId: 'comment-121',
       });

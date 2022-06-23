@@ -43,7 +43,6 @@ describe('a DetailReply entity', () => {
     expect(detailReply.content).toEqual(payload.content);
     expect(detailReply.date).toEqual(payload.date);
     expect(detailReply.username).toEqual(payload.username);
-    expect(detailReply.isDelete).toEqual(payload.isDelete);
   });
 
   it('should create DetailReply object properly when the reply is deleted', () => {
@@ -63,6 +62,5 @@ describe('a DetailReply entity', () => {
     expect(detailReply.content).toEqual('**balasan telah dihapus**');
     expect(detailReply.date).toEqual(payload.date);
     expect(detailReply.username).toEqual(payload.username);
-    expect(detailReply.isDelete).toEqual(payload.isDelete);
   });
 });

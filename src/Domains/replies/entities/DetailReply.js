@@ -6,7 +6,6 @@ class DetailReply {
     this.content = payload.isDelete ? '**balasan telah dihapus**' : payload.content;
     this.date = payload.date;
     this.username = payload.username;
-    this.isDelete = payload.isDelete;
   }
 
   _verifyPayload(payload) {
@@ -19,20 +18,19 @@ class DetailReply {
   }
 
   _isPayloadNotContainNeededProperty({
-    id, content, date, username, isDelete,
+    id, content, date, username,
   }) {
-    return (!id || !content || !date || !username || typeof isDelete === 'undefined' || isDelete === null);
+    return (!id || !content || !date || !username);
   }
 
   _isPayloadNotMeetDataTypeSpecification({
-    id, content, date, username, isDelete,
+    id, content, date, username,
   }) {
     return (
       typeof id !== 'string'
         || typeof content !== 'string'
         || typeof date !== 'string'
         || typeof username !== 'string'
-        || typeof isDelete !== 'boolean'
     );
   }
 }

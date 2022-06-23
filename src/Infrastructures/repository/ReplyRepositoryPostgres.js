@@ -13,55 +13,43 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   // ADD
   async addReply(data) {
     const {
-      content, owner, threadId, commentId,
+      content, owner, commentId,
     } = data;
     const id = `reply-${this._idGenerator(10)}`;
-    const date = new Date().toISOString();
 
     const query = {
-      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner',
-      values: [id, content, date, owner, commentId],
+      text: 'INSERT INTO replies VALUES($1, $2, $3, $4) RETURNING id, content, owner',
+      values: [id, content, owner, commentId],
     };
 
     const result = await this._pool.query(query);
-    return new AddedReply({ ...result.rows[0] });
+    return new AddedReply(result.rows[0]);
   }
 
-  // VERIFY
+  // VERIFY REPLY ID
+  async verifyReplyById(id) {
+    const query = {
+      text: 'SELECT * FROM replies WHERE id=$1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundError('Balasan tidak ditemukan');
+    }
+  }
+
+  // VERIFY ACCESS
   async verifyAccess(id, userId) {
     const query = {
-      text: 'SELECT * FROM replies WHERE id = $1',
-      values: [id],
+      text: 'SELECT * FROM replies WHERE id=$1 AND owner=$2',
+      values: [id, userId],
     };
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new NotFoundError('Balasan tidak ditemukan');
-    }
-
-    const reply = result.rows[0];
-    if (reply.owner !== userId) {
       throw new AuthorizationError('Proses gagal! Anda tidak berhak mengakses balasan ini');
     }
-  }
-
-  // GET
-  async getReplyById(id) {
-    const query = {
-      text: `SELECT replies.id, 
-            CASE WHEN replies.is_delete THEN '**balasan telah dihapus**' else replies.content END AS content,
-            replies.date, users.username
-            FROM replies LEFT JOIN users ON replies.owner = users.id 
-            WHERE replies.id = $1`,
-      values: [id],
-    };
-
-    const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Balasan tidak ditemukan');
-    }
-
-    return result.rows[0];
   }
 
   // GET Reply By Thread and Comments ID
@@ -72,14 +60,10 @@ class ReplyRepositoryPostgres extends ReplyRepository {
           LEFT JOIN comments ON replies.comment_id = comments.id
           LEFT JOIN users ON replies.owner = users.id
           WHERE comments.thread_id = $1 AND replies.comment_id = ANY($2::text[])
-          ORDER BY date ASC`,
+          ORDER BY date`,
       values: [threadId, commentIds],
     };
     const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      return [];
-    }
 
     return result.rows;
   }
@@ -92,13 +76,8 @@ class ReplyRepositoryPostgres extends ReplyRepository {
             WHERE id = $1`,
       values: [replyId],
     };
-    const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError('Balasan tidak ditemukan');
-    }
-
-    return { status: 'success' };
+    await this._pool.query(query);
   }
 }
 

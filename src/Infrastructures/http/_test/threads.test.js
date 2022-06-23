@@ -155,7 +155,6 @@ describe('/threads endpoint', () => {
         title: 'Lorem ipsum dolor sit amet, consectetur',
         body: 'The thread added sit amet',
         owner: 'user-123',
-        date: '2022-06-03T14:54:33.160Z',
       });
 
       const server = await createServer(container);
@@ -192,13 +191,11 @@ describe('/threads endpoint', () => {
         id: 'thread-123',
         title: 'Lorem ipsum dolor sit amet, consectetur',
         body: 'The thread added sit amet',
-        date: '2022-06-03T14:54:33.160Z',
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
         content: 'Lorem ipsum dolor sit amet',
-        date: '2022-06-03T15:54:33.160Z',
         owner: 'user-123',
         threadId: 'thread-123',
         isDelete: false,
@@ -206,7 +203,6 @@ describe('/threads endpoint', () => {
       await CommentsTableTestHelper.addComment({
         id: 'comment-124',
         content: 'Could say something',
-        date: '2022-06-03T18:04:33.160Z',
         owner: 'user-456',
         threadId: 'thread-123',
         isDelete: true,
@@ -250,13 +246,11 @@ describe('/threads endpoint', () => {
         id: idThread,
         title: 'Lorem ipsum dolor sit amet, consectetur',
         body: 'The thread added sit amet',
-        date: '2022-06-03T14:54:33.160Z',
         owner: 'user-123',
       });
       await CommentsTableTestHelper.addComment({
         id: 'comment-122',
         content: 'Lorem ipsum dolor sit amet',
-        date: '2022-06-03T15:54:33.160Z',
         owner: 'user-123',
         threadId: idThread,
         isDelete: false,
@@ -264,7 +258,6 @@ describe('/threads endpoint', () => {
       await CommentsTableTestHelper.addComment({
         id: 'comment-124',
         content: 'Picasso et al',
-        date: '2022-06-03T18:04:33.160Z',
         owner: 'user-456',
         threadId: idThread,
         isDelete: true,
@@ -272,7 +265,6 @@ describe('/threads endpoint', () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Miraculously',
-        date: '2022-06-03T16:54:33.160Z',
         owner: 'user-123',
         commentId: 'comment-122',
         isDelete: true,
@@ -280,7 +272,6 @@ describe('/threads endpoint', () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-124',
         content: 'See this! Lorem ipsum dolor sit amet',
-        date: '2022-06-03T21:04:33.160Z',
         owner: 'user-456',
         commentId: 'comment-122',
         isDelete: false,

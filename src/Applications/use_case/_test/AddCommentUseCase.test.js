@@ -27,8 +27,7 @@ describe('AddCommentUseCase', () => {
     const mockCommentRepository = new CommentRepository();
 
     /* mocking needed function */
-    mockThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadById = jest.fn(() => Promise.resolve());
     mockCommentRepository.addComment = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedAddedComment));
 
@@ -43,6 +42,7 @@ describe('AddCommentUseCase', () => {
 
     // Assert
     expect(addedComment).toStrictEqual(expectedAddedComment);
+    expect(mockThreadRepository.verifyThreadById).toBeCalledWith(payload.threadId);
     expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment({
       threadId: 'thread-123',
       content: 'Generate stone trademark',

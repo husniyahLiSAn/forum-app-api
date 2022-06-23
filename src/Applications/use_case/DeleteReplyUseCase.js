@@ -4,9 +4,11 @@ class DeleteReplyUseCase {
   }
 
   async execute(payload) {
+    await this._replyRepository.verifyReplyById(payload.replyId);
+
     await this._replyRepository.verifyAccess(payload.replyId, payload.user);
 
-    return this._replyRepository.deleteReplyById(payload.replyId);
+    await this._replyRepository.deleteReplyById(payload.replyId);
   }
 }
 

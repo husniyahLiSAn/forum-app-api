@@ -9,18 +9,14 @@ describe('DeleteReplyUseCase', () => {
       replyId: 'reply-123',
       user: 'user-123',
     };
-    const expectedDeletedReply = {
-      status: 'success',
-    };
 
     /** creating dependency of use case */
     const mockReplyRepository = new ReplyRepository();
 
     /** mocking needed function */
-    mockReplyRepository.verifyAccess = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.deleteReplyById = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedDeletedReply));
+    mockReplyRepository.verifyReplyById = jest.fn(() => Promise.resolve());
+    mockReplyRepository.verifyAccess = jest.fn(() => Promise.resolve());
+    mockReplyRepository.deleteReplyById = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const deleteReplyUseCase = new DeleteReplyUseCase({
@@ -28,10 +24,12 @@ describe('DeleteReplyUseCase', () => {
     });
 
     // Action
-    const deletedReply = await deleteReplyUseCase.execute(payload);
+    await deleteReplyUseCase.execute(payload);
 
     // Assert
-    expect(deletedReply).toStrictEqual(expectedDeletedReply);
+    expect(mockReplyRepository.verifyReplyById).toBeCalledWith(
+      payload.replyId,
+    );
     expect(mockReplyRepository.verifyAccess).toBeCalledWith(
       payload.replyId,
       payload.user,

@@ -9,18 +9,14 @@ describe('DeleteCommentUseCase', () => {
       commentId: 'comment-123',
       user: 'user-123',
     };
-    const expectedDeletedComment = {
-      status: 'success',
-    };
 
     /** creating dependency of use case */
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockCommentRepository.verifyAccess = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.deleteCommentById = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedDeletedComment));
+    mockCommentRepository.verifyCommentById = jest.fn(() => Promise.resolve());
+    mockCommentRepository.verifyAccess = jest.fn(() => Promise.resolve());
+    mockCommentRepository.deleteCommentById = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const deleteCommentUseCase = new DeleteCommentUseCase({
@@ -28,16 +24,14 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action
-    const deletedComment = await deleteCommentUseCase.execute(payload);
+    await deleteCommentUseCase.execute(payload);
 
     // Assert
-    expect(deletedComment).toStrictEqual(expectedDeletedComment);
+    expect(mockCommentRepository.verifyCommentById).toBeCalledWith(payload.commentId);
     expect(mockCommentRepository.verifyAccess).toBeCalledWith(
       payload.commentId,
       payload.user,
     );
-    expect(mockCommentRepository.deleteCommentById).toBeCalledWith(
-      payload.commentId,
-    );
+    expect(mockCommentRepository.deleteCommentById).toBeCalledWith(payload.commentId);
   });
 });

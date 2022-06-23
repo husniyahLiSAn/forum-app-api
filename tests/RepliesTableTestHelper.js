@@ -5,19 +5,19 @@ const RepliesTableTestHelper = {
   async addReply({
     id = 'reply-123',
     content = 'Lorem ipsum dolor sit amet, the reply',
-    date = '2022-06-03T08:54:33.160Z',
+    date = new Date().toISOString(),
     owner = 'user-123',
     commentId = 'comment-123',
     isDelete = false,
   }) {
     const query = {
       text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6)',
-      values: [id, content, date, owner, commentId, isDelete],
+      values: [id, content, owner, commentId, date, isDelete],
     };
     await pool.query(query);
   },
 
-  async getReplyById(id) {
+  async verifyReplyById(id) {
     const query = {
       text: 'SELECT * FROM replies WHERE id = $1',
       values: [id],

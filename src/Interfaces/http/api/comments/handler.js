@@ -20,14 +20,12 @@ class CommentsHandler {
     const addCommentUseCase = this._container.getInstance(AddCommentUseCase.name);
     const addedComment = await addCommentUseCase.execute({ ...payload, owner });
 
-    const response = h.response({
+    return h.response({
       status: 'success',
       data: {
         addedComment,
       },
-    });
-    response.code(201);
-    return response;
+    }).code(201);
   }
 
   // DELETE
@@ -41,11 +39,9 @@ class CommentsHandler {
     const deleteCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name);
     await deleteCommentUseCase.execute({ ...payload, user });
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 

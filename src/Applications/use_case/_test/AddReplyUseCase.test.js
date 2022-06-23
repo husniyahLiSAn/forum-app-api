@@ -10,10 +10,11 @@ describe('AddReplyUseCase', () => {
    */
   it('should orchestrating the add reply action correctly', async () => {
     // Arrange
+    const now = new Date();
     const payload = {
       id: 'reply-123',
       content: 'Generate stone trademark',
-      date: '2022-06-04T03:28:30.111Z',
+      date: now,
       owner: 'user-123',
       commentId: 'comment-123',
       threadId: 'thread-123',
@@ -26,8 +27,7 @@ describe('AddReplyUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     /* mocking needed function */
-    mockCommentRepository.verifyCommentOnThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockCommentRepository.verifyCommentOnThread = jest.fn(() => Promise.resolve());
     mockReplyRepository.addReply = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedAddedReply));
 
@@ -45,7 +45,7 @@ describe('AddReplyUseCase', () => {
     expect(mockReplyRepository.addReply).toBeCalledWith(new AddReply({
       id: 'reply-123',
       content: 'Generate stone trademark',
-      date: '2022-06-04T03:28:30.111Z',
+      date: now.toISOString(),
       owner: 'user-123',
       commentId: 'comment-123',
       threadId: 'thread-123',

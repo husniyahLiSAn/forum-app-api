@@ -1,13 +1,14 @@
+const pool = require('../../database/postgres/pool');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
-const pool = require('../../database/postgres/pool');
+const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('ThreadRepositoryPostgres', () => {
   it('should be instance of ThreadRepository domain', () => {
@@ -52,7 +53,7 @@ describe('ThreadRepositoryPostgres', () => {
         await threadRepositoryPostgres.addThread(payload);
 
         // Assert
-        const threads = await ThreadsTableTestHelper.getThreadById('thread-123');
+        const threads = await ThreadsTableTestHelper.verifyThreadById('thread-123');
 
         expect(threads).toHaveLength(1);
       });
@@ -80,45 +81,58 @@ describe('ThreadRepositoryPostgres', () => {
       });
     });
 
-    describe('getThreadById function', () => {
-      it('should return NotFoundError when thread not found', async () => {
+    describe('verifyThreadById function', () => {
+      it('should throw NotFoundError when thread does not exist', async () => {
+        // Arrange
+        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+        // Action & Assert
+        await expect(threadRepositoryPostgres.verifyThreadById('thread-123'))
+          .rejects.toThrowError(NotFoundError);
+      });
+
+      it('should not throw NotFoundError when thread exist', async () => {
         // Arrange
         await ThreadsTableTestHelper.addThread({
           id: 'thread-123',
           title: 'Lorem ipsum dolor sit amet, consectetur',
           body: 'The thread added sit amet',
           owner: 'user-123',
-          date: '2022-06-02T04:54:33.160Z',
         });
 
         const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
-        // Action and Assert
-        await expect((threadRepositoryPostgres.getThreadById('thread-345'))).rejects.toThrowError(NotFoundError);
+        // Action & Assert
+        await expect(threadRepositoryPostgres.verifyThreadById('thread-123'))
+          .resolves.not.toThrowError(NotFoundError);
       });
+    });
 
-      it('should not throw error when thread found', async () => {
+    describe('getDetailThreadById function', () => {
+      it('should not throw error when thread exist', async () => {
         // Arrange
+        const now = new Date();
         await ThreadsTableTestHelper.addThread({
-          id: 'thread-123',
+          id: 'thread-724',
           title: 'Lorem ipsum dolor sit amet, consectetur',
           body: 'The thread added sit amet',
           owner: 'user-123',
-          date: '2022-06-02T04:54:33.160Z',
+          date: now,
         });
         const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
         // Action
-        const thread = await threadRepositoryPostgres.getThreadById('thread-123');
+        const thread = await threadRepositoryPostgres.getDetailThreadById('thread-724');
 
         // Assert
-        expect(thread).toStrictEqual({
-          id: 'thread-123',
+        expect(thread).toStrictEqual(new DetailThread({
+          id: 'thread-724',
           title: 'Lorem ipsum dolor sit amet, consectetur',
           body: 'The thread added sit amet',
-          date: '2022-06-02T04:54:33.160Z',
+          date: now.toISOString(),
           username: 'dicoding',
-        });
+          comments: [],
+        }));
       });
     });
   });

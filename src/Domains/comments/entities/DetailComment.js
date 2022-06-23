@@ -6,7 +6,6 @@ class DetailComment {
     this.date = payload.date;
     this.username = payload.username;
     this.content = payload.isDelete ? '**komentar telah dihapus**' : payload.content;
-    this.isDelete = payload.isDelete;
     this.replies = payload.replies;
   }
 
@@ -20,20 +19,19 @@ class DetailComment {
   }
 
   _isPayloadNotContainNeededProperty({
-    id, username, date, content, replies, isDelete,
+    id, username, date, content, replies,
   }) {
-    return (!id || !username || !date || !content || !replies || typeof isDelete === 'undefined' || isDelete === null);
+    return (!id || !username || !date || !content || !replies);
   }
 
   _isPayloadNotMeetDataTypeSpecification({
-    id, username, date, content, replies, isDelete,
+    id, username, date, content, replies,
   }) {
     return (
       typeof id !== 'string'
         || typeof username !== 'string'
         || typeof date !== 'string'
         || typeof content !== 'string'
-        || typeof isDelete !== 'boolean'
         || !(Array.isArray(replies))
     );
   }

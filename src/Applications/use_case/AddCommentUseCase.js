@@ -9,7 +9,7 @@ class AddCommentUseCase {
   }
 
   async execute(payload) {
-    await this._threadRepository.getThreadById(payload.threadId);
+    await this._threadRepository.verifyThreadById(payload.threadId);
     return this._commentRepository.addComment(new AddComment(payload));
   }
 }

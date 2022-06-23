@@ -21,14 +21,12 @@ class RepliesHandler {
     const addReplyUseCase = this._container.getInstance(AddReplyUseCase.name);
     const addedReply = await addReplyUseCase.execute({ ...payload, owner });
 
-    const response = h.response({
+    return h.response({
       status: 'success',
       data: {
         addedReply,
       },
-    });
-    response.code(201);
-    return response;
+    }).code(201);
   }
 
   // DELETE
@@ -43,11 +41,9 @@ class RepliesHandler {
     const deleteReplyUseCase = this._container.getInstance(DeleteReplyUseCase.name);
     await deleteReplyUseCase.execute({ ...payload, user });
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 

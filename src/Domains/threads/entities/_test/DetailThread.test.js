@@ -2,21 +2,22 @@ const DetailThread = require('../DetailThread');
 
 describe('an AddedThread entity', () => {
   it('should throw error if payload does not meet criteria', () => {
-    // arrange
-
+    // Arrange
+    const now = new Date();
     const payload = {
       id: 'thread-123',
       title: 'Lorem ipsum dolor sit amet, consectetur',
       body: 'The thread added sit amet',
-      date: '2022-06-02T04:54:33.160Z',
+      date: now.toISOString(),
     };
 
-    // action and assert
+    // Action and Assert
     expect(() => new DetailThread(payload)).toThrowError('DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should throw error when payload has invalid data type', () => {
-    // arrange
+    // Arrange
+    const now = new Date();
     const payload = {
       id: 345,
       title: 1984,
@@ -26,17 +27,18 @@ describe('an AddedThread entity', () => {
       comments: 'comments',
     };
 
-    // action and assert
+    // Action and Assert
     expect(() => new DetailThread(payload)).toThrowError('DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
   it('should create DetailThread object correctly', () => {
     // Arrange
+    const now = new Date();
     const payload = {
       id: 'thread-123',
       title: 'Lorem ipsum dolor sit amet, consectetur',
       body: 'The thread added sit amet',
-      date: '2022-06-02T04:54:33.160Z',
+      date: now.toISOString(),
       username: 'John Doe',
       comments: [],
     };

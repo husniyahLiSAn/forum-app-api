@@ -46,7 +46,6 @@ describe('a DetailComment entity', () => {
     expect(detailComment.date).toEqual(payload.date);
     expect(detailComment.content).toEqual(payload.content);
     expect(detailComment.replies).toEqual(payload.replies);
-    expect(detailComment.isDelete).toEqual(payload.isDelete);
   });
 
   it('should create DetailComment object properly when the comment is deleted', () => {
@@ -68,6 +67,5 @@ describe('a DetailComment entity', () => {
     expect(detailComment.date).toEqual(payload.date);
     expect(detailComment.content).toEqual('**komentar telah dihapus**');
     expect(detailComment.replies).toEqual(payload.replies);
-    expect(detailComment.isDelete).toEqual(payload.isDelete);
   });
 });
