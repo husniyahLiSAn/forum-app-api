@@ -208,14 +208,14 @@ describe('CommentRepositoryPostgres', () => {
         await CommentsTableTestHelper.addComment({
           id: 'comment-113',
           content: 'Lorem ipsum',
-          date: '2022-06-06',
+          date: now,
           threadId: 'thread-123',
           owner: 'user-123',
         });
         await CommentsTableTestHelper.addComment({
           id: 'comment-321',
           content: 'Lorem ipsum',
-          date: '2022-06-12',
+          date: now,
           owner: 'user-123',
           threadId: 'thread-123',
           isDelete: true,
