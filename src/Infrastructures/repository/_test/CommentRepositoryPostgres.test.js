@@ -204,7 +204,6 @@ describe('CommentRepositoryPostgres', () => {
 
       it('should return all of the comments in a thread', async () => {
         // Arrange
-        const now = new Date();
         await CommentsTableTestHelper.addComment({
           id: 'comment-113',
           content: 'Lorem ipsum',
