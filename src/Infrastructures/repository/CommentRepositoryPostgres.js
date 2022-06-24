@@ -80,6 +80,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       date: row.date.toISOString(),
       username: row.username,
       content: row.content,
+      likeCount: 0,
       isDelete: row.is_delete,
       replies: [],
     }));
