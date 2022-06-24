@@ -19,6 +19,7 @@ describe('a DetailComment entity', () => {
       username: [],
       date: 2022,
       content: { },
+      likeCount: 'null',
       replies: 'replies',
       isDelete: 234,
     };
@@ -33,6 +34,7 @@ describe('a DetailComment entity', () => {
       username: 'unknown user55',
       date: 'thread-123,',
       content: 'Content of comment',
+      likeCount: 0,
       replies: [],
       isDelete: false,
     };
@@ -45,6 +47,7 @@ describe('a DetailComment entity', () => {
     expect(detailComment.username).toEqual(payload.username);
     expect(detailComment.date).toEqual(payload.date);
     expect(detailComment.content).toEqual(payload.content);
+    expect(detailComment.likeCount).toEqual(payload.likeCount);
     expect(detailComment.replies).toEqual(payload.replies);
   });
 
@@ -54,6 +57,7 @@ describe('a DetailComment entity', () => {
       username: 'unknown user55',
       date: 'thread-123,',
       content: 'Dunno for the comment',
+      likeCount: 0,
       replies: [],
       isDelete: true,
     };
@@ -66,6 +70,7 @@ describe('a DetailComment entity', () => {
     expect(detailComment.username).toEqual(payload.username);
     expect(detailComment.date).toEqual(payload.date);
     expect(detailComment.content).toEqual('**komentar telah dihapus**');
+    expect(detailComment.likeCount).toEqual(payload.likeCount);
     expect(detailComment.replies).toEqual(payload.replies);
   });
 });

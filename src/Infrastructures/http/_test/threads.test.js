@@ -8,9 +8,11 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
+const LikesTableTestHelper = require('../../../../tests/LikesTableTestHelper');
 
 describe('/threads endpoint', () => {
   afterEach(async () => {
+    await LikesTableTestHelper.cleanTable();
     await RepliesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
@@ -207,6 +209,16 @@ describe('/threads endpoint', () => {
         threadId: 'thread-123',
         isDelete: true,
       });
+      await LikesTableTestHelper.addLike({
+        id: 'like-160',
+        commentId: 'comment-123',
+        userId: 'user-123',
+      });
+      await LikesTableTestHelper.addLike({
+        id: 'like-162',
+        commentId: 'comment-123',
+        userId: 'user-456',
+      });
       const server = await createServer(container);
 
       // Action
@@ -225,6 +237,10 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.thread.comments[0]).toBeDefined();
       expect(responseJson.data.thread.comments[1]).toBeDefined();
       expect(responseJson.data.thread.comments[1].content).toEqual('**komentar telah dihapus**');
+      expect(responseJson.data.thread.comments[0].likeCount).toBeDefined();
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(2);
+      expect(responseJson.data.thread.comments[1].likeCount).toBeDefined();
+      expect(responseJson.data.thread.comments[1].likeCount).toEqual(0);
     });
 
     it('should response 200 and get replies & comments from thread correctly', async () => {
@@ -276,6 +292,16 @@ describe('/threads endpoint', () => {
         commentId: 'comment-122',
         isDelete: false,
       });
+      await LikesTableTestHelper.addLike({
+        id: 'like-127',
+        commentId: 'comment-122',
+        userId: 'user-123',
+      });
+      await LikesTableTestHelper.addLike({
+        id: 'like-130',
+        commentId: 'comment-122',
+        userId: 'user-456',
+      });
       const server = await createServer(container);
 
       // Action
@@ -300,6 +326,10 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.thread.comments[0].replies[1]).toBeDefined();
       expect(responseJson.data.thread.comments[1].replies).toStrictEqual([]);
       expect(responseJson.data.thread.comments[1].replies).toHaveLength(0);
+      expect(responseJson.data.thread.comments[0].likeCount).toBeDefined();
+      expect(responseJson.data.thread.comments[0].likeCount).toEqual(2);
+      expect(responseJson.data.thread.comments[1].likeCount).toBeDefined();
+      expect(responseJson.data.thread.comments[1].likeCount).toEqual(0);
     });
   });
 });

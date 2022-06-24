@@ -232,6 +232,7 @@ describe('CommentRepositoryPostgres', () => {
           username: 'johnD0e',
           content: 'Lorem ipsum',
           date: new Date(comments[0].date).toISOString(),
+          likeCount: 0,
           isDeleted: false,
           replies: [],
         }));
@@ -240,6 +241,7 @@ describe('CommentRepositoryPostgres', () => {
           username: 'johnD0e',
           content: '**komentar telah dihapus**',
           date: new Date(comments[1].date).toISOString(),
+          likeCount: 0,
           isDeleted: true,
           replies: [],
         }));

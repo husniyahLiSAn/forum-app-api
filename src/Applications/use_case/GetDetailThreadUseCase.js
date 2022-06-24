@@ -1,10 +1,11 @@
 class GetDetailThreadUseCase {
   constructor({
-    threadRepository, commentRepository, replyRepository,
+    threadRepository, commentRepository, replyRepository, likeRepository,
   }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
     this._replyRepository = replyRepository;
+    this._likeRepository = likeRepository;
   }
 
   // untuk menampung data yang masuk.
@@ -21,6 +22,9 @@ class GetDetailThreadUseCase {
     const dataReplies = await this._replyRepository
       .getRepliesByThreadCommentId(payload, commentIds);
 
+    // Get Likes Comments
+    const likeCountOfComments = await this._likeRepository.countLikes(commentIds);
+
     // Save data comments and replies to data Thread
     dataThread.comments = dataComments.map((comment) => {
       const replies = dataReplies.filter((reply) => reply.comment_id === comment.id)
@@ -30,12 +34,16 @@ class GetDetailThreadUseCase {
           date: reply.date,
           content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
         }));
+      const likeCount = likeCountOfComments
+        .filter((like) => like.comment_id === comment.id)
+        .map((like) => like.count * 1)[0];
 
       return ({
         id: comment.id,
         username: comment.username,
         date: comment.date,
         content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
+        likeCount: likeCount === undefined ? 0 : likeCount,
         replies,
       });
     });

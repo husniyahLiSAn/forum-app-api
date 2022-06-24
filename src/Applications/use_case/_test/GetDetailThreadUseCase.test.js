@@ -4,6 +4,7 @@ const DetailReply = require('../../../Domains/replies/entities/DetailReply');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 const GetDetailThreadUseCase = require('../GetDetailThreadUseCase');
 
 describe('GetDetailThreadUseCase', () => {
@@ -83,6 +84,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'johndoe',
           date: now.toISOString(),
           content: 'Just a comment',
+          likeCount: 7,
           replies: [
             new DetailReply({
               id: 'reply-123',
@@ -103,6 +105,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'dicoding',
           date: now.toISOString(),
           content: 'Leaving a comment',
+          likeCount: 15,
           replies: [
             new DetailReply({
               id: 'reply-125',
@@ -117,6 +120,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'dicoding',
           date: now.toISOString(),
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           replies: [],
         }),
       ],
@@ -126,6 +130,7 @@ describe('GetDetailThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeRepository = new LikeRepository();
 
     /** mocking needed function */
     mockThreadRepository.verifyThreadById = jest.fn(() => Promise.resolve());
@@ -135,12 +140,21 @@ describe('GetDetailThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(expectedComments));
     mockReplyRepository.getRepliesByThreadCommentId = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedReplies));
+    mockLikeRepository.countLikes = jest.fn()
+      .mockImplementation(() => Promise.resolve(
+        [
+          { comment_id: 'comment-123', count: '7' },
+          { comment_id: 'comment-124', count: '15' },
+          { comment_id: 'comment-125', count: '0' },
+        ],
+      ));
 
     /** creating use case instance */
     const detailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: mockLikeRepository,
     });
 
     // Action
@@ -153,5 +167,7 @@ describe('GetDetailThreadUseCase', () => {
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(idThread);
     expect(mockReplyRepository.getRepliesByThreadCommentId)
       .toBeCalledWith(idThread, expectedComments.map((comment) => comment.id));
+    expect(mockLikeRepository.countLikes)
+      .toBeCalledWith(expectedComments.map((comment) => comment.id));
   });
 });
