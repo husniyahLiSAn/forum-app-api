@@ -14,8 +14,7 @@ describe('LikeCommentUseCase', () => {
     const mockLikeRepository = new LikeRepository();
 
     mockCommentRepository.verifyCommentOnThread = jest.fn(() => Promise.resolve());
-    mockLikeRepository.checkCommentAlreadyLiked = jest.fn()
-      .mockImplementation(() => Promise.resolve([]));
+    mockLikeRepository.checkCommentAlreadyLiked = jest.fn(() => Promise.resolve([]));
     mockLikeRepository.addLike = jest.fn()
       .mockImplementation(() => Promise.resolve([
         {
@@ -61,8 +60,7 @@ describe('LikeCommentUseCase', () => {
     const mockLikeRepository = new LikeRepository();
 
     mockCommentRepository.verifyCommentOnThread = jest.fn(() => Promise.resolve());
-    mockLikeRepository.checkCommentAlreadyLiked = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedGetLike));
+    mockLikeRepository.checkCommentAlreadyLiked = jest.fn(() => Promise.resolve(expectedGetLike));
     mockLikeRepository.removeLike = jest.fn(() => Promise.resolve());
     mockLikeRepository.addLike = jest.fn();
 
